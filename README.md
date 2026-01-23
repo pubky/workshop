@@ -21,6 +21,13 @@ By the end of the session you will:
 - Build a tiny app that reads and writes user data.
 - Ship a working demo you can extend after the workshop.
 
+Want to explore Pubky identities and public data while you learn? Try these:
+
+- **PKDNS Digger**: https://pkdns.net/ inspect PKDNS/PKARR records to see
+  which homeserver a pubky identity resolves to.
+- **Pubky Explorer**: https://explorer.pubky.app/ browse public data on
+  homeservers using pubky links (helpful for validating your public writes).
+
 ---
 
 ## Prerequisites
@@ -48,36 +55,17 @@ By the end of the session you will:
    npm install
    ```
 
----
+3. **Run the workshop CLI**
 
-## Workshop flow
+   ```bash
+   npm run workshop -- --homeserver pubky<z32> --invite INVITE-123
+   ```
 
-<!--
-**0–5 min: Setup**
-
-- Install dependencies
-- Add homeserver URL + invite code
-- Start the dev server
-
-**5–15 min: Connect with pubky-sdk**
-
-- Initialize the client
-- Create or join a user session
-
-**15–30 min: Build the app**
-
-- Read user profile data
-- Write a small entry (e.g., a status or note)
-
-**30–40 min: Add polish**
-
-- Handle loading + error states
-- Add a simple UI improvement
-
-**40–45 min: Wrap up**
-
-- Share where to go next
-- Q&A -->
+   Optional flags:
+   - `--recovery ./path/to/file.recovery` (persist/reuse your encrypted keypair)
+   - `--passphrase "your passphrase"` or `PUBKY_PASSPHRASE=...` (avoid prompts)
+   - `--other pubky<z32>/pub/app/file.txt` (fetch another user's public data)
+   - `--log debug` (enable SDK logs)
 
 ---
 
