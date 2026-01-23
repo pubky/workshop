@@ -1,0 +1,15 @@
+{
+  "name": "pubky-workshop",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Workshop of @synonymdev/pubky",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+  },
+  "dependencies": {
+    "@synonymdev/pubky": "0.6.0"
+  }
+}
