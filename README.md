@@ -24,9 +24,9 @@ By the end of the session you will:
 Want to explore Pubky identities and public data while you learn? Try these:
 
 - **PKDNS Digger**: https://pkdns.net/ inspect PKDNS/PKARR records to see
-  which homeserver a pubky identity resolves to.
+  which homeserver a Pubky identity resolves to.
 - **Pubky Explorer**: https://explorer.pubky.app/ browse public data on
-  homeservers using pubky links (helpful for validating your public writes).
+  homeservers using Pubky links (helpful for validating your public writes).
 
 ---
 
@@ -73,11 +73,11 @@ Want to explore Pubky identities and public data while you learn? Try these:
 
 A tiny app that:
 
-- Signup a new user to an existing homeserver with an invite code.
-- Stores and restores your id secret.
-- Signin into the homeserver.
-- Lets you write data into the pubky verse.
-- Fetches other users data from their homeserver.
+- Signs up a new user on an existing homeserver using an invite code.  
+- Stores and restores your ID secret.  
+- Signs in to the homeserver.  
+- Lets you write data to the Pubky verse.  
+- Fetches other users’ data from their homeservers.  
 
 ---
 
