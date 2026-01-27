@@ -1,92 +1,92 @@
-# From Zero to Pubky: Your First Pubky Application.
+# De cero a Pubky: tu primera aplicación Pubky.
 
-Welcome! This repo is the companion for a live workshop where we code a small app together using the **pubky-sdk** JavaScript client.
+¡Bienvenido/a! Este repo es el material de apoyo para un taller en vivo donde programamos una app pequeña juntos usando el cliente JavaScript **pubky-sdk**.
 
-We will provide:
+Proveeremos:
 
-- A hosted Pubky homeserver for the workshop.
-- Invitation codes for attendees.
+- Un homeserver Pubky hosteado para el taller.
+- Códigos de invitación a ese homeserver.
 
-This README contains everything you need to follow along.
-
----
-
-## Workshop goals
-
-By the end of the session you will:
-
-- Initialize a JavaScript project using the pubky-sdk client.
-- Connect to a hosted Pubky homeserver.
-- Authenticate with an invitation code.
-- Build a tiny app that reads and writes user data.
-- Ship a working demo you can extend after the workshop.
-
-Want to explore Pubky identities and public data while you learn? Try these:
-
-- **PKDNS Digger**: https://pkdns.net/ inspect PKDNS/PKARR records to see
-  which homeserver a Pubky identity resolves to.
-- **Pubky Explorer**: https://explorer.pubky.app/ browse public data on
-  homeservers using Pubky links (helpful for validating your public writes).
+Este README contiene todo lo que necesitas para seguir el taller.
 
 ---
 
-## Prerequisites
+## Objetivos del taller
 
-- **Node.js** 22+ (LTS recommended)
+Al final de la sesión vas a:
+
+- Inicializar un proyecto JavaScript usando el cliente pubky-sdk.
+- Conectarte a un homeserver Pubky.
+- Autenticarte con un código de invitación.
+- Construir una app pequeñita que lee y escribe datos de usuario.
+- Entregar una demo funcional que puedas extender después del taller.
+
+¿Quieres explorar identidades Pubky y datos públicos mientras aprendes? Prueba estos:
+
+- **PKDNS Digger**: https://pkdns.net/ inspecciona registros PKDNS/PKARR para ver
+  a qué homeserver resuelve una identidad Pubky.
+- **Pubky Explorer**: https://explorer.pubky.app/ navega datos públicos en
+  homeservers usando enlaces Pubky (útil para validar los datos que vas a escribir publicamente).
+
+---
+
+## Requisitos previos
+
+- **Node.js** 22+
 - **npm**
-- Your **invite code** (provided at the workshop)
+- Tu **código de invitación** (se entrega en el taller)
 
 ---
 
-## Quick start
+## Inicio rápido
 
-> The instructor will provide the homeserver id and invite code during the session.
+> El instructor proporcionará el id del homeserver y el código de invitación durante la sesión.
 
-1. **Clone this repo**
+1. **Clona este repo**
 
    ```bash
    git clone <this-repo-url>
    cd pubky-workshop
    ```
 
-2. **Install dependencies**
+2. **Instala las dependencias**
 
    ```bash
    npm install
    ```
 
-3. **Run the workshop CLI**
+3. **Ejecuta el CLI del taller**
 
    ```bash
    npm run workshop -- --homeserver pubky<z32> --invite INVITE-123
    ```
 
-   Optional flags:
-   - `--recovery ./path/to/file.recovery` (persist/reuse your encrypted keypair)
-   - `--passphrase "your passphrase"` or `PUBKY_PASSPHRASE=...` (avoid prompts)
-   - `--other pubky<z32>/pub/app/file.txt` (fetch another user's public data)
-   - `--log debug` (enable SDK logs)
+   Flags opcionales:
+   - `--recovery ./path/to/file.recovery` (persistir/reutilizar tu par de claves cifrado)
+   - `--passphrase "your passphrase"` o `PUBKY_PASSPHRASE=...` (evitar prompts)
+   - `--other pubky<z32>/pub/app/file.txt` (obtener datos públicos de otro usuario)
+   - `--log debug` (habilitar logs del SDK)
 
 ---
 
-## What we are building
+## Qué estamos construyendo
 
-A tiny app that:
+Una app pequeñita que:
 
-- Signs up a new user on an existing homeserver using an invite code.  
-- Stores and restores your ID secret.  
-- Signs in to the homeserver.  
-- Lets you write data to the Pubky verse.  
-- Fetches other users’ data from their homeservers.  
-
----
-
-## Code of conduct
-
-Be kind, ask questions, and help each other. 💜
+- Registra a un usuario nuevo en un homeserver existente usando un código de invitación.
+- Guarda y restaura tu secreto de ID.
+- Inicia sesión en el homeserver.
+- Te permite escribir datos en Pubky.
+- Obtiene datos de otros usuarios usando URLs Pubky.
 
 ---
 
-## License
+## Código de conducta
 
-This workshop material is licensed under MIT.
+Sé amable, haz preguntas y ayúdense entre ustedes. 💜
+
+---
+
+## Licencia
+
+Este material del taller está licenciado bajo MIT.

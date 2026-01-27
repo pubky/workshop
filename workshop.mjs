@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 
-// A tiny, heavily-commented Pubky SDK workshop CLI.
+// Un CLI diminuto del taller del Pubky SDK, con muchísimos comentarios.
 //
-// Goals (end-to-end):
-// 1) Signup a new user on a homeserver (with an invite code).
-// 2) Store the user's root secret locally (encrypted recovery file).
-// 3) Restore that secret later and sign in (session cookie + PKDNS lookup).
-// 4) Write data into the Pubky verse (public storage under /pub/...).
-// 5) Fetch another user's public data from their homeserver.
+// Objetivos (de punta a punta):
+// 1) Registrar un usuario nuevo en un homeserver (con un código de invitación).
+// 2) Guardar el secreto semilla del usuario localmente (archivo de recuperación cifrado).
+// 3) Restaurar ese secreto más tarde e iniciar sesión (cookie de sesión + búsqueda en PKDNS).
+// 4) Escribir datos en el Pubkyverso (almacenamiento público bajo /pub/...).
+// 5) Obtener datos públicos de otro usuario desde su homeserver.
 //
-// This script is intentionally verbose. Each step explains what happens
-// under the hood and why it's ✨ supremely cool ✨ in a decentralized world.
+// Este script es intencionalmente verboso. Cada paso explica qué ocurre
+// por debajo y por qué es ✨ extremadamente genial ✨ en un mundo descentralizado.
 //
-// Extra learning tools (highly recommended):
-// - PKDNS Digger: https://pkdns.net/ → inspect PKDNS/PKARR records and confirm
-//   where a pubky identity resolves its homeserver.
-// - Pubky Explorer: https://explorer.pubky.app/ → browse public data stored on
-//   homeservers using pubky links (great for verifying public writes).
+// Herramientas extra para aprender (muy recomendadas):
+// - PKDNS Digger: https://pkdns.net/ → inspecciona registros PKDNS/PKARR y confirma
+//   a qué homeserver resuelve una identidad pubky.
+// - Pubky Explorer: https://explorer.pubky.app/ → explora datos públicos almacenados en
+//   homeservers usando enlaces pubky (ideal para verificar escrituras públicas).
 
 import {
   Pubky,
@@ -34,8 +34,8 @@ const DEFAULT_RECOVERY_FILE = "./pubky.recovery";
 const DEFAULT_WRITE_PATH = "/pub/pubky-workshop/hello.json";
 
 /**
- * Parse trivial CLI args (no deps; keep the workshop lightweight).
- * Supported flags:
+ * Parsear argumentos triviales del CLI (sin dependencias; mantener el taller liviano).
+ * Flags soportados:
  *   --homeserver <pubky>
  *   --invite <code>
  *   --recovery <path>
@@ -63,15 +63,15 @@ function parseArgs(argv) {
 
 function usage() {
   return `\
-Usage:
+Uso:
   node workshop.mjs [--homeserver <z32>] [--invite <code>] \
     [--recovery <path>] [--passphrase <pass>] [--other <pubky>/<path>] [--log <level>]
 
-Examples:
+Ejemplos:
   node workshop.mjs --homeserver <z32> --invite INVITE-123 --other pubky<z32>/pub/app/file.txt
 
-Tips:
-  - You can set PUBKY_PASSPHRASE in the environment to avoid prompting.
+Consejos:
+  - Puedes definir PUBKY_PASSPHRASE en el entorno para evitar el prompt.
 `;
 }
 
@@ -107,23 +107,24 @@ async function main() {
     return;
   }
 
-  // 0) Optional: dial up SDK logging before any Pubky objects are created.
-  // This surfaces request traces, PKDNS lookups, and WASM-side logs.
+  
+  // 0) Opcional: subir el nivel de logging del SDK antes de crear cualquier objeto Pubky.
+  // Esto muestra trazas de requests, búsquedas PKDNS y logs del lado de WASM.
   const logLevel = args.get("log") ?? null;
   if (logLevel) {
     setLogLevel(logLevel);
   }
 
-  // 1) Initialize the SDK facade (mainnet relays + real public-key domains).
+  // 1) Inicializar la fachada del SDK (relays de mainnet + dominios reales de clave pública).
   const pubky = new Pubky();
-  divider("Pubky Workshop CLI: a tiny tour of decentralized identity + data");
+  divider("Pubky Workshop CLI: un mini tour por identidad + datos descentralizados");
   callout(
-    "We will create (or restore) a cryptographic identity, sign in without passwords, write public data, and read it back from any homeserver."
+    "Vamos a crear (o restaurar) una identidad criptográfica, iniciar sesión sin contraseñas, escribir datos públicos y leerlos de vuelta desde cualquier homeserver."
   );
 
-  // 2) Recovery file handling: this is our encrypted root secret.
-  // If it exists, we restore the Keypair from it. If not, we create
-  // a brand-new keypair and encrypt it into a recovery file.
+  // 2) Manejo del archivo de recuperación: este es nuestro secreto raíz cifrado.
+  // Si existe, restauramos el Keypair desde ahí. Si no, creamos
+  // un par de claves totalmente nuevo y lo ciframos en un archivo de recuperación.
   const recoveryPath = resolve(args.get("recovery") ?? DEFAULT_RECOVERY_FILE);
   let keypair;
 
@@ -131,152 +132,153 @@ async function main() {
   const passphrase =
     args.get("passphrase") ??
     process.env.PUBKY_PASSPHRASE ??
-    (await prompt("Recovery passphrase (will be echoed): "));
+    (await prompt("Passphrase de recuperación (se mostrará): "));
 
   if (hasRecovery) {
-    // Restore an existing identity.
+    // Restaurar una identidad existente.
     const recoveryBytes = await readFileUint8(recoveryPath);
     keypair = Keypair.fromRecoveryFile(recoveryBytes, passphrase);
-    divider("Step 1/5  Restore your identity");
-    info("Recovery file:", recoveryPath);
-    callout("Your keypair stays yours. We only store an encrypted secret locally.");
+    divider("Paso 1/5  Restaura tu identidad");
+    info("Archivo de recuperación:", recoveryPath);
+    callout("Tu keypair sigue siendo tuyo. Solo almacenamos un secreto cifrado localmente.");
   } else {
-    // If the file doesn't exist, create a new identity.
-    divider("Step 1/5  Create a new identity");
-    info("Recovery file:", recoveryPath);
-    info("Status:", "No recovery file found. Creating one...");
+    // Si el archivo no existe, crear una identidad nueva.
+    divider("Paso 1/5  Crea una identidad nueva");
+    info("Archivo de recuperación:", recoveryPath);
+    info("Estado:", "No se encontró archivo de recuperación. Creando uno...");
 
     keypair = Keypair.random();
 
-    // createRecoveryFile() encrypts the secret key with your passphrase.
+    // createRecoveryFile() cifra la clave secreta con tu passphrase.
     const recoveryFile = keypair.createRecoveryFile(passphrase);
     await writeFile(recoveryPath, recoveryFile);
 
-    info("Saved:", "Encrypted recovery file written.");
+    info("Guardado:", "Archivo de recuperación cifrado escrito.");
     callout(
-      "This is your root of trust. Anyone with this secret can act as you  keep it safe!"
+      "Esta es tu raíz de confianza. Cualquiera con este secreto puede actuar como tú  ¡mantenlo seguro!"
     );
   }
 
-  // 3) Bind the keypair to a Signer. This is the actor that can sign AuthTokens,
-  // approve auth flows, and create authenticated sessions.
+  // 3) Vincula el keypair a un Signer. Este es el actor que puede firmar AuthTokens,
+  // aprobar flujos de auth y crear sesiones autenticadas.
   const signer = pubky.signer(keypair);
-  divider("Step 2/5  Introduce your Pubky identity");
-  info("User identifier (pubky):", keypair.publicKey.toString());
-  info("PKDNS lookup URL:", pkdnsUrl(keypair.publicKey.z32()));
+  divider("Paso 2/5  Presenta tu identidad Pubky");
+  info("Identificador de usuario (pubky):", keypair.publicKey.toString());
+  info("URL de consulta PKDNS:", pkdnsUrl(keypair.publicKey.z32()));
   callout(
-    "Your public key IS your username. No central registry required, and it works everywhere."
+    "Tu clave pública ES tu nombre de usuario. No hace falta un registro central, y funciona en todas partes."
   );
 
-  // 4) Pick a homeserver: the server that will host our personal data and
-  // issue session cookies. In Pubky, homeservers are also identified by
-  // public keys (the server's own identity).
+  // 4) Elegir un homeserver: el servidor que alojará nuestros datos personales y
+  // emitirá cookies de sesión. En Pubky, los homeservers también se identifican por
+  // claves públicas (la identidad propia del servidor).
   const homeserverInput = args.get("homeserver") ?? "";
-  divider("Step 3/5  Choose a homeserver");
+  divider("Paso 3/5  Elige un homeserver");
 
   const existingHomeserver = await signer.pkdns.getHomeserver();
   let homeserver = existingHomeserver ?? null;
 
   if (existingHomeserver) {
-    info("Existing homeserver found via PKDNS:", existingHomeserver.toString());
+    info("Homeserver existente encontrado vía PKDNS:", existingHomeserver.toString());
     if (homeserverInput && homeserverInput !== existingHomeserver.toString()) {
-      info("Note:", "Using PKDNS homeserver and skipping signup.");
+      info("Nota:", "Usando el homeserver de PKDNS y omitiendo el signup.");
     }
   } else {
     const homeserverString = homeserverInput
       ? homeserverInput
-      : await prompt("Homeserver public key (<z32>): ");
+      : await prompt("Clave pública del homeserver (<z32>): ");
 
     if (!homeserverString) {
-      console.error("Missing homeserver. Provide --homeserver.");
+      console.error("Falta el homeserver. Proporciona --homeserver.");
       console.error(usage());
       process.exit(1);
     }
 
     homeserver = PublicKey.from(homeserverString);
-    info("Homeserver public key (z32):", homeserver.z32());
+    info("Clave pública del homeserver (z32):", homeserver.z32());
     callout(
-      "Homeservers are identified by public keys too. That means you can verify who you are talking to without traditional DNS or CA certificates."
+      "Los homeservers también se identifican por claves públicas. Eso significa que puedes verificar con quién estás hablando sin DNS tradicional ni certificados de CA."
     );
   }
 
-  // 5) Signup only if we don't already have a homeserver published.
-  // - The invite code is optional on some homeservers; required on others.
-  // - The SDK also publishes a _pubky PKARR record after signup, mapping our
-  //   user public key to the chosen homeserver.
-  divider("Step 4/5  Signup (only if needed)");
+  // 5) Hacer signup solo si todavía no tenemos un homeserver publicado.
+  // - El código de invitación es opcional en algunos homeservers; obligatorio en otros.
+  // - El SDK también publica un registro PKARR _pubky después del signup, mapeando
+  //   la clave pública del usuario al homeserver elegido.
+  divider("Paso 4/5  Signup (solo si hace falta)");
   if (existingHomeserver) {
-    info("Action:", "Signup skipped (user already exists).");
+    info("Acción:", "Signup omitido (el usuario ya existe).");
   } else {
-    const inviteCode = args.get("invite") ?? (await prompt("Invite code: "));
-    info("Invite code:", inviteCode ? inviteCode : "(none)");
-    info("Action:", "Signing up (creates the user + session).");
+    const inviteCode = args.get("invite") ?? (await prompt("Código de invitación: "));
+    info("Código de invitación:", inviteCode ? inviteCode : "(ninguno)");
+    info("Acción:", "Haciendo signup (crea el usuario + la sesión).");
     const signupSession = await signer.signup(homeserver, inviteCode || null);
-    info("Signup completed for:", signupSession.info.publicKey.toString());
+    info("Signup completado para:", signupSession.info.publicKey.toString());
     callout(
-      "The SDK publishes a _pubky record so anyone can resolve your homeserver from your public key."
+      "El SDK publica un registro _pubky para que cualquiera pueda resolver tu homeserver a partir de tu clave pública."
     );
   }
 
-  // 6) Signin: prove we control the root key and ask the homeserver for a new
-  // session. The SDK resolves the user's homeserver via PKDNS/PKARR, and then
-  // makes the authenticated /session request.
-  info("Action:", "Signing in (PKDNS lookup + /session exchange).");
+  // 6) Signin: demostrar que controlamos la clave raíz y pedir al homeserver una nueva
+  // sesión. El SDK resuelve el homeserver del usuario vía PKDNS/PKARR, y luego
+  // hace el request autenticado a /session.
+  info("Acción:", "Haciendo signin (consulta PKDNS + intercambio /session).");
   const session = await signer.signinBlocking();
-  info("Signin successful. Capabilities:", session.info.capabilities);
+  info("Signin exitoso. Capabilities:", session.info.capabilities);
   callout(
-    "No passwords, no OAuth redirect. Just cryptography proving you control the key."
+    "Sin contraseñas, sin redirección OAuth. Solo criptografía demostrando que controlas la clave."
   );
 
-  // 7) Write data into the Pubky verse. We use /pub/ so anyone can read it.
-  // SessionStorage uses the cookie automatically; no manual auth headers needed.
+  // 7) Escribir datos en el Pubkyverso. Usamos /pub/ para que cualquiera pueda leerlo.
+  // SessionStorage usa la cookie automáticamente; no hacen falta headers de auth manuales.
   const payload = {
-    message: "Hello from the Pubky workshop CLI!",
+    message: "¡Hola desde el CLI del taller de Pubky!",
     timestamp: new Date().toISOString(),
     user: session.info.publicKey.toString(),
   };
 
-  divider("Step 5/5  Write public data + read it back");
-  info("Writing JSON to:", DEFAULT_WRITE_PATH);
+  divider("Paso 5/5  Escribe datos públicos + léelos de vuelta");
+  info("Escribiendo JSON en:", DEFAULT_WRITE_PATH);
   await session.storage.putJson(DEFAULT_WRITE_PATH, payload);
-  callout("This write is authenticated with your session cookie and scoped capabilities.");
+  callout("Esta escritura se autentica con tu cookie de sesión y capabilities.");
 
-  // 8) Fetch our own data back publicly to prove the write is visible.
-  // PublicStorage uses addressed URIs: pubky<user>/pub/...
+  // 8) Obtener nuestros propios datos de vuelta públicamente para demostrar que la escritura es visible.
+  // PublicStorage usa URIs direccionadas: pubky<user>/pub/...
   const selfAddress = `${session.info.publicKey.toString()}${DEFAULT_WRITE_PATH}`;
-  info("Reading back via public storage:", selfAddress);
-  info("Pubky Explorer URL:", explorerUrl(selfAddress));
+  info("Leyendo de vuelta vía almacenamiento público:", selfAddress);
+  info("URL de Pubky Explorer:", explorerUrl(selfAddress));
   const roundtrip = await pubky.publicStorage.getJson(selfAddress);
-  info("Public read success:", JSON.stringify(roundtrip, null, 2));
+  info("Lectura pública OK:", JSON.stringify(roundtrip, null, 2));
   callout(
-    "Anyone can fetch public content directly from your homeserver  no central gateway required."
+    "Cualquiera puede obtener contenido público directamente desde tu homeserver  no hace falta un gateway central."
   );
 
-  // 9) Fetch another user's data (public read). This demonstrates that any app
-  // can read public data without a session, as long as it has the user's pubky.
+  // 9) Obtener datos de otro usuario (lectura pública). Esto demuestra que cualquier app
+  // puede leer datos públicos sin una sesión, mientras tenga el pubky del usuario.
   const otherResource =
     args.get("other") ??
     (await prompt(
-      "Other user resource (pubky<z32>/pub/... or blank to skip): ",
+      "Recurso de otro usuario (pubky<z32>/pub/... o vacío para omitir): ",
       "",
     ));
 
   if (otherResource) {
-    divider("Bonus  Fetch another user's public data");
-    info("Fetching resource:", otherResource);
+    divider("Bonus  Obtener datos públicos de otro usuario");
+    info("Obteniendo recurso:", otherResource);
     const otherText = await pubky.publicStorage.getText(otherResource);
-    info("Other user content (text):", otherText);
-    callout("This is the open-data superpower: any app can read public data by pubky.");
+    info("Contenido del otro usuario (texto):", otherText);
+    callout("Este es el superpoder de los datos abiertos: cualquier app puede leer datos públicos por pubky.");
   } else {
-    info("Other-user fetch:", "Skipped.");
+    info("Lectura de otro usuario:", "Omitida.");
   }
 
-  divider("Workshop complete");
-  console.log("✅ You now have a Pubky identity, a live session, and public data on-chain.");
-  callout("Your identity is portable, your data is addressable, and your apps are decentralizable.");
+  divider("Taller completo");
+  console.log("✅ Ahora tienes una identidad Pubky, una sesión activa y datos públicos.");
+  callout("Tu identidad es portable, tus datos son direccionables y tus apps son descentralizables.");
 }
 
 main().catch((error) => {
-  console.error("\n❌ Workshop failed:", error);
+  console.error("\n❌ El taller falló:", error);
   process.exit(1);
 });
+
