@@ -28,7 +28,7 @@ import { access, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
-import { callout, divider, info } from "./utils.mjs";
+import { callout, divider, info, explorerUrl, pkdnsUrl } from "./utils.mjs";
 
 const DEFAULT_RECOVERY_FILE = "./pubky.recovery";
 const DEFAULT_WRITE_PATH = "/pub/pubky-workshop/hello.json";
@@ -163,6 +163,7 @@ async function main() {
   const signer = pubky.signer(keypair);
   divider("Step 2/5  Introduce your Pubky identity");
   info("User identifier (pubky):", keypair.publicKey.toString());
+  info("PKDNS lookup URL:", pkdnsUrl(keypair.publicKey.z32()));
   callout(
     "Your public key IS your username. No central registry required, and it works everywhere."
   );
@@ -244,6 +245,7 @@ async function main() {
   // PublicStorage uses addressed URIs: pubky<user>/pub/...
   const selfAddress = `${session.info.publicKey.toString()}${DEFAULT_WRITE_PATH}`;
   info("Reading back via public storage:", selfAddress);
+  info("Pubky Explorer URL:", explorerUrl(selfAddress));
   const roundtrip = await pubky.publicStorage.getJson(selfAddress);
   info("Public read success:", JSON.stringify(roundtrip, null, 2));
   callout(
