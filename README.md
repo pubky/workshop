@@ -30,17 +30,23 @@ Al final de la sesión vas a:
 
 ---
 
-## Requisitos previos
+## Material
+
+- **[Pubky SDK npm.js](https://www.npmjs.com/package/@synonymdev/pubky/v/0.6.0)**
+- Tu **[código de invitación](https://docs.google.com/spreadsheets/d/1QQFcFnzZP7V3eNFbTF6iZAdjMxPBGqExHYmmibmRjdw/edit?gid=0#gid=0)** : escoge un codigo de este Google Sheet y eliminalo para evitar que otros usen un codigo invalido.
+- **Identidad del Homeserver de practicas:**: `ufibwbmed6jeq9k4p583go95wofakh9fwpp4k734trq79pd9u1uy`
+- **[Diapositivas de la presentación](https://docs.google.com/presentation/d/1r5CW8erOf5mRWnjreVpIveTtMVPFCmi7A5ES4pLH_2o/edit?slide=id.p15#slide=id.p15)**
+
+Requisitos previos:
 
 - **Node.js** 22+
 - **npm**
-- Tu **código de invitación** (se entrega en el taller)
 
 ---
 
 ## Inicio rápido
 
-> El instructor proporcionará el id del homeserver y el código de invitación durante la sesión.
+> Toma el id del homeserver y el código de desde [este Google Doc](https://docs.google.com/spreadsheets/d/1QQFcFnzZP7V3eNFbTF6iZAdjMxPBGqExHYmmibmRjdw/edit?gid=0#gid=0).
 
 1. **Clona este repo**
 
